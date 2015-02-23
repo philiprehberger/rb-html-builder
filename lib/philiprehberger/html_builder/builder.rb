@@ -28,7 +28,7 @@ module Philiprehberger
       #
       # @return [String] the rendered HTML
       def to_html
-        @root_children.map { |c| c.is_a?(Node) ? c.to_html : Escape.html(c.to_s) }.join
+        @root_children.map { |c| c.respond_to?(:to_html) ? c.to_html : Escape.html(c.to_s) }.join
       end
 
       ALL_TAGS.each do |tag_name|
