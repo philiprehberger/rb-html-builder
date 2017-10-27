@@ -3,6 +3,7 @@
 [![Tests](https://github.com/philiprehberger/rb-html-builder/actions/workflows/ci.yml/badge.svg)](https://github.com/philiprehberger/rb-html-builder/actions/workflows/ci.yml)
 [![Gem Version](https://badge.fury.io/rb/philiprehberger-html_builder.svg)](https://rubygems.org/gems/philiprehberger-html_builder)
 [![License](https://img.shields.io/github/license/philiprehberger/rb-html-builder)](LICENSE)
+[![Sponsor](https://img.shields.io/badge/sponsor-GitHub%20Sponsors-ec6cb9)](https://github.com/sponsors/philiprehberger)
 
 Programmatic HTML builder with tag DSL and auto-escaping
 
