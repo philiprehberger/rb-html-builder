@@ -56,7 +56,7 @@ module Philiprehberger
       def render_attributes
         return '' if attributes.empty?
 
-        attrs = attributes.map do |key, value|
+        attributes.map do |key, value|
           if value == true
             " #{key}"
           elsif value == false || value.nil?
@@ -65,8 +65,6 @@ module Philiprehberger
             " #{key}=\"#{Escape.html(value)}\""
           end
         end.join
-
-        attrs
       end
     end
   end
