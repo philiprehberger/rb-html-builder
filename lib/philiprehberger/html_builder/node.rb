@@ -31,15 +31,16 @@ module Philiprehberger
 
       # Render the node to an HTML string
       #
+      # @param indent [Integer, nil] current indentation level (nil for minified)
+      # @param indent_size [Integer] number of spaces per indent level
       # @return [String] the rendered HTML
-      def to_html
-        if void_element?
-          "<#{tag}#{render_attributes}>"
-        elsif children.empty?
-          "<#{tag}#{render_attributes}></#{tag}>"
+      def to_html(indent: nil, indent_size: 2)
+        flat_attrs = flatten_attributes(attributes)
+
+        if indent
+          render_pretty(flat_attrs, indent: indent, indent_size: indent_size)
         else
-          inner = children.map { |c| c.respond_to?(:to_html) ? c.to_html : Escape.html(c.to_s) }.join
-          "<#{tag}#{render_attributes}>#{inner}</#{tag}>"
+          render_inline(flat_attrs)
         end
       end
 
@@ -52,19 +53,87 @@ module Philiprehberger
         VOID_ELEMENTS.include?(tag)
       end
 
-      # @return [String] rendered attribute string
-      def render_attributes
-        return '' if attributes.empty?
-
-        attributes.map do |key, value|
-          if value == true
-            " #{key}"
-          elsif value == false || value.nil?
-            ''
+      # Flatten nested hash attributes (data, aria) into hyphenated keys
+      #
+      # @param attrs [Hash] the attributes hash
+      # @return [Hash] flattened attributes
+      def flatten_attributes(attrs)
+        result = {}
+        attrs.each do |key, value|
+          if value.is_a?(Hash)
+            value.each do |sub_key, sub_value|
+              result[:"#{key}-#{sub_key}"] = sub_value
+            end
           else
-            " #{key}=\"#{Escape.html(value)}\""
+            result[key] = value
           end
-        end.join
+        end
+        result
+      end
+
+      # Render a single attribute pair
+      #
+      # @param key [Symbol] attribute name
+      # @param value [Object] attribute value
+      # @return [String] rendered attribute string
+      def render_attribute(key, value)
+        if value == true
+          " #{key}"
+        elsif value == false || value.nil?
+          ''
+        else
+          " #{key}=\"#{Escape.html(value)}\""
+        end
+      end
+
+      # @return [String] rendered attribute string
+      def render_attributes(attrs)
+        return '' if attrs.empty?
+
+        attrs.map { |key, value| render_attribute(key, value) }.join
+      end
+
+      # Render inline (minified) HTML
+      def render_inline(flat_attrs)
+        attr_str = render_attributes(flat_attrs)
+        if void_element?
+          "<#{tag}#{attr_str}>"
+        elsif children.empty?
+          "<#{tag}#{attr_str}></#{tag}>"
+        else
+          inner = children.map { |c| c.respond_to?(:to_html) ? c.to_html : Escape.html(c.to_s) }.join
+          "<#{tag}#{attr_str}>#{inner}</#{tag}>"
+        end
+      end
+
+      # Render pretty-printed HTML with indentation
+      def render_pretty(flat_attrs, indent:, indent_size:)
+        attr_str = render_attributes(flat_attrs)
+        pad = ' ' * (indent * indent_size)
+
+        if void_element?
+          "#{pad}<#{tag}#{attr_str}>"
+        elsif children.empty?
+          "#{pad}<#{tag}#{attr_str}></#{tag}>"
+        else
+          # Check if all children are text-only (no Node children)
+          all_text = children.none? { |c| c.respond_to?(:to_html) }
+          if all_text
+            inner = children.map { |c| Escape.html(c.to_s) }.join
+            "#{pad}<#{tag}#{attr_str}>#{inner}</#{tag}>"
+          else
+            lines = ["#{pad}<#{tag}#{attr_str}>"]
+            children.each do |c|
+              lines << if c.respond_to?(:to_html)
+                         c.to_html(indent: indent + 1, indent_size: indent_size)
+                       else
+                         "#{' ' * ((indent + 1) * indent_size)}#{Escape.html(c.to_s)}"
+                       end
+            end
+            lines << "#{pad}</#{tag}>"
+            lines.join("\n")
+          end
+        end
       end
     end
   end
