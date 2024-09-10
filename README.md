@@ -105,12 +105,71 @@ Philiprehberger::HtmlBuilder.build do
     field(:first_name)
     select_field(:country, [%w[USA us], %w[Canada ca]], selected: 'us')
     textarea_field(:bio, rows: '5')
-    button 'Submit', type: 'submit'
+    submit('Sign Up', class: 'btn')
   end
 end
 ```
 
 The `field` helper generates a `<label>` and `<input>` pair. The `select_field` helper generates a `<label>` and `<select>` with `<option>` tags. The `textarea_field` helper generates a `<label>` and `<textarea>`. Label text is auto-generated from the field name (underscores become spaces, words are capitalized).
+
+### Hidden Fields
+
+Generate hidden input elements for tokens, CSRF fields, or any non-visible form data:
+
+```ruby
+Philiprehberger::HtmlBuilder.build do
+  form_for('/update') do
+    hidden_field(:csrf_token, 'abc123')
+    hidden_field(:action, 'save')
+    field(:title)
+    submit
+  end
+end
+# hidden_field produces: <input type="hidden" name="csrf_token" value="abc123">
+```
+
+### Submit Buttons
+
+Generate submit buttons with optional text and attributes:
+
+```ruby
+Philiprehberger::HtmlBuilder.build do
+  form_for('/login') do
+    field(:username)
+    submit                              # => <button type="submit">Submit</button>
+    submit('Log In', class: 'btn-primary')  # => <button type="submit" class="btn-primary">Log In</button>
+  end
+end
+```
+
+### CSS Class Helpers
+
+Build conditional CSS class strings from mixed arguments. Strings are included as-is, hash keys are included when their value is truthy:
+
+```ruby
+Philiprehberger::HtmlBuilder.build do
+  div(class: class_names('btn', 'btn-lg', active: true, disabled: false)) do
+    text 'Click me'
+  end
+end
+# => <div class="btn btn-lg active">Click me</div>
+```
+
+### Fragment Caching
+
+Cache rendered block results by key. On subsequent calls with the same key, the cached HTML is returned without re-executing the block:
+
+```ruby
+Philiprehberger::HtmlBuilder.build do
+  cache(:nav) do
+    nav { a 'Home', href: '/' }
+  end
+  main { p 'Content' }
+  cache(:nav) do
+    nav { a 'Home', href: '/' }  # block is not re-executed; cached HTML is used
+  end
+end
+```
 
 ### Conditional Rendering
 
@@ -203,6 +262,10 @@ Philiprehberger::HtmlBuilder.merge(header, body, footer)
 | `Builder#field(name, label_text:, type:, **attrs)` | Build a label + input pair |
 | `Builder#select_field(name, options, label_text:, selected:, **attrs)` | Build a label + select with options |
 | `Builder#textarea_field(name, content, label_text:, **attrs)` | Build a label + textarea |
+| `Builder#hidden_field(name, value)` | Generate a hidden input element |
+| `Builder#submit(text, **attrs)` | Generate a submit button (default text "Submit") |
+| `Builder#class_names(*args)` | Build a conditional CSS class string from strings and hashes |
+| `Builder#cache(key) { ... }` | Cache rendered block output by key; return cached HTML on repeat calls |
 | `Escape.html(value)` | Escape HTML special characters in a string |
 
 ## Development

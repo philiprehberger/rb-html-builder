@@ -23,6 +23,7 @@ module Philiprehberger
         @root_children = []
         @stack = []
         @components = {}
+        @cache_store = {}
       end
 
       # Render all root-level nodes to HTML (minified)
@@ -195,6 +196,66 @@ module Philiprehberger
         label_str = label_text || name.to_s.gsub('_', ' ').split.map(&:capitalize).join(' ')
         label label_str, for: field_id
         textarea(content, name: name.to_s, id: field_id, **attrs)
+      end
+
+      # Form builder helper: generate a hidden input field
+      #
+      # @param name [String, Symbol] the input name attribute
+      # @param value [String, Symbol] the input value attribute
+      # @return [Node]
+      def hidden_field(name, value)
+        input(type: 'hidden', name: name.to_s, value: value.to_s)
+      end
+
+      # Form builder helper: generate a submit button
+      #
+      # @param text [String] the button text (default "Submit")
+      # @param attrs [Hash] additional button attributes
+      # @return [Node]
+      def submit(text = 'Submit', **attrs)
+        button(text, type: 'submit', **attrs)
+      end
+
+      # Build a space-joined CSS class string from mixed arguments
+      #
+      # Strings are included as-is. Hash keys are included when their value is truthy.
+      #
+      # @param args [Array<String, Hash>] class names and conditional hashes
+      # @return [String] space-joined class string
+      def class_names(*args)
+        result = []
+        args.each do |arg|
+          case arg
+          when Hash
+            arg.each { |key, val| result << key.to_s if val }
+          else
+            result << arg.to_s
+          end
+        end
+        result.join(' ')
+      end
+
+      # Cache a rendered block result by key
+      #
+      # On the first call with a given key, the block is executed, its rendered
+      # HTML is stored, and a raw node is appended. On subsequent calls with the
+      # same key, the cached HTML is appended without re-executing the block.
+      #
+      # @param key [Object] the cache key
+      # @yield the block to render and cache
+      # @return [void]
+      def cache(key, &block)
+        raise Error, 'a block is required for cache' unless block
+
+        if @cache_store.key?(key)
+          raw(@cache_store[key])
+        else
+          nested = Builder.new
+          nested.instance_eval(&block)
+          html = nested.to_html
+          @cache_store[key] = html
+          raw(html)
+        end
       end
 
       private
