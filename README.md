@@ -229,6 +229,15 @@ Philiprehberger::HtmlBuilder.build_pretty(indent_size: 4) do
 end
 ```
 
+### Escape Helper
+
+Escape arbitrary strings outside the DSL using the same entity encoding:
+
+```ruby
+Philiprehberger::HtmlBuilder.escape('<script>alert("xss")</script>')
+# => "&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;"
+```
+
 ### Fragment Merging
 
 Combine multiple builder outputs into a single HTML string:
@@ -250,6 +259,7 @@ Philiprehberger::HtmlBuilder.merge(header, body, footer)
 | `HtmlBuilder.build_pretty { ... }` | Build pretty-printed HTML with indentation |
 | `HtmlBuilder.build_minified { ... }` | Alias for `build`, explicitly produces minified output |
 | `HtmlBuilder.merge(*fragments)` | Merge multiple HTML fragment strings into one |
+| `HtmlBuilder.escape(value)` | Escape HTML special characters in a string using the DSL's escaper |
 | `Builder#to_html` | Render builder contents to a minified HTML string |
 | `Builder#to_pretty_html` | Render builder contents to a pretty-printed HTML string |
 | `Builder#text(content)` | Add escaped text content to the current element |

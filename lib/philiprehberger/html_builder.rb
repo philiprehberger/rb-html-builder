@@ -52,5 +52,13 @@ module Philiprehberger
     def self.merge(*fragments)
       fragments.join
     end
+
+    # Escape HTML special characters in a string using the same escaper as the DSL.
+    #
+    # @param value [Object] the value to escape (converted to string)
+    # @return [String] the escaped string
+    def self.escape(value)
+      Escape.html(value)
+    end
   end
 end

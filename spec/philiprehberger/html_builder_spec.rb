@@ -754,6 +754,20 @@ RSpec.describe Philiprehberger::HtmlBuilder do
     end
   end
 
+  describe '.escape' do
+    it 'escapes HTML entities' do
+      expect(described_class.escape('<a>&"')).to eq('&lt;a&gt;&amp;&quot;')
+    end
+
+    it 'converts non-string values to strings' do
+      expect(described_class.escape(42)).to eq('42')
+    end
+
+    it 'returns empty string for empty input' do
+      expect(described_class.escape('')).to eq('')
+    end
+  end
+
   describe 'HTML fragment merging' do
     it 'merges two fragments' do
       frag1 = described_class.build { h1 'Title' }
