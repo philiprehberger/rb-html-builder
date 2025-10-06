@@ -216,6 +216,26 @@ module Philiprehberger
         button(text, type: 'submit', **attrs)
       end
 
+      # Build a list (ul or ol) from an array of items
+      #
+      # @param items [Array] the list items
+      # @param ordered [Boolean] use ol instead of ul (default false)
+      # @param attrs [Hash] additional attributes for the list element
+      # @yield [item] optional block for custom rendering of each item
+      # @return [Node]
+      def list(items, ordered: false, **attrs, &block)
+        tag_name = ordered ? :ol : :ul
+        send(tag_name, **attrs) do
+          items.each do |item|
+            if block
+              li { block.call(item) }
+            else
+              li item.to_s
+            end
+          end
+        end
+      end
+
       # Build a space-joined CSS class string from mixed arguments
       #
       # Strings are included as-is. Hash keys are included when their value is truthy.

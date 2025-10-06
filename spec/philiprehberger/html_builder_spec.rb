@@ -572,6 +572,52 @@ RSpec.describe Philiprehberger::HtmlBuilder do
     end
   end
 
+  describe '#list' do
+    it 'builds an unordered list from items' do
+      html = described_class.build do
+        list(%w[Apple Banana Cherry])
+      end
+      expect(html).to eq('<ul><li>Apple</li><li>Banana</li><li>Cherry</li></ul>')
+    end
+
+    it 'builds an ordered list when ordered: true' do
+      html = described_class.build do
+        list(%w[First Second Third], ordered: true)
+      end
+      expect(html).to eq('<ol><li>First</li><li>Second</li><li>Third</li></ol>')
+    end
+
+    it 'yields each item to a block for custom rendering' do
+      html = described_class.build do
+        list(%w[Alice Bob]) do |name|
+          strong name
+        end
+      end
+      expect(html).to eq('<ul><li><strong>Alice</strong></li><li><strong>Bob</strong></li></ul>')
+    end
+
+    it 'passes extra attributes to the list element' do
+      html = described_class.build do
+        list(%w[One Two], class: 'menu', id: 'nav')
+      end
+      expect(html).to eq('<ul class="menu" id="nav"><li>One</li><li>Two</li></ul>')
+    end
+
+    it 'renders an empty list when items is empty' do
+      html = described_class.build do
+        list([])
+      end
+      expect(html).to eq('<ul></ul>')
+    end
+
+    it 'escapes text content in items' do
+      html = described_class.build do
+        list(['<script>xss</script>'])
+      end
+      expect(html).to eq('<ul><li>&lt;script&gt;xss&lt;/script&gt;</li></ul>')
+    end
+  end
+
   describe '#class_names' do
     it 'returns a single string class' do
       result = described_class.build do
