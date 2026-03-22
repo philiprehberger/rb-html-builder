@@ -38,7 +38,7 @@ module Philiprehberger
         elsif children.empty?
           "<#{tag}#{render_attributes}></#{tag}>"
         else
-          inner = children.map { |c| c.is_a?(Node) ? c.to_html : Escape.html(c.to_s) }.join
+          inner = children.map { |c| c.respond_to?(:to_html) ? c.to_html : Escape.html(c.to_s) }.join
           "<#{tag}#{render_attributes}>#{inner}</#{tag}>"
         end
       end
