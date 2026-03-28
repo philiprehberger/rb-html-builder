@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-03-28
+
+### Added
+- Form builder helpers (`form_for`, `field`, `select_field`, `textarea_field`) for streamlined form construction
+- HTML5 data/aria attribute support via hash syntax (`data: { id: 1 }` renders as `data-id="1"`)
+- Conditional rendering with `render_if` and `render_unless` blocks
+- Component/partial system with `define_component` and `use_component` for reusable named blocks
+- Pretty-printed output mode via `build_pretty` with configurable indentation
+- Minified output mode via `build_minified` (alias for `build`)
+- HTML fragment merging via `HtmlBuilder.merge` to combine multiple builder outputs
+
 ## [0.1.3] - 2026-03-24
 
 ### Fixed

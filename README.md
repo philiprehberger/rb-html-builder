@@ -1,11 +1,8 @@
 # philiprehberger-html_builder
 
-[![Tests](https://github.com/philiprehberger/rb-html-builder/actions/workflows/ci.yml/badge.svg)](https://github.com/philiprehberger/rb-html-builder/actions/workflows/ci.yml)
-[![Gem Version](https://badge.fury.io/rb/philiprehberger-html_builder.svg)](https://rubygems.org/gems/philiprehberger-html_builder)
-[![License](https://img.shields.io/github/license/philiprehberger/rb-html-builder)](LICENSE)
-[![Sponsor](https://img.shields.io/badge/sponsor-GitHub%20Sponsors-ec6cb9)](https://github.com/sponsors/philiprehberger)
+[![Tests](https://github.com/philiprehberger/rb-html-builder/actions/workflows/ci.yml/badge.svg)](https://github.com/philiprehberger/rb-html-builder/actions/workflows/ci.yml) [![Gem Version](https://img.shields.io/gem/v/philiprehberger-html_builder)](https://rubygems.org/gems/philiprehberger-html_builder) [![GitHub release](https://img.shields.io/github/v/release/philiprehberger/rb-html-builder)](https://github.com/philiprehberger/rb-html-builder/releases) [![GitHub last commit](https://img.shields.io/github/last-commit/philiprehberger/rb-html-builder)](https://github.com/philiprehberger/rb-html-builder/commits/main) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Bug Reports](https://img.shields.io/badge/bug-reports-red.svg)](https://github.com/philiprehberger/rb-html-builder/issues) [![Feature Requests](https://img.shields.io/badge/feature-requests-blue.svg)](https://github.com/philiprehberger/rb-html-builder/issues) [![GitHub Sponsors](https://img.shields.io/badge/sponsor-philiprehberger-ea4aaa.svg?logo=github)](https://github.com/sponsors/philiprehberger)
 
-Programmatic HTML builder with tag DSL and auto-escaping
+Programmatic HTML builder with tag DSL, auto-escaping, form helpers, components, and output formatting.
 
 ## Requirements
 
@@ -72,6 +69,19 @@ Philiprehberger::HtmlBuilder.build do
 end
 ```
 
+### Data and Aria Attributes
+
+Use hash syntax for HTML5 `data-*` and `aria-*` attributes:
+
+```ruby
+Philiprehberger::HtmlBuilder.build do
+  div(data: { id: 1, action: 'click' }, aria: { label: 'Panel' }) do
+    button('Toggle', aria: { expanded: 'false' })
+  end
+end
+# => '<div data-id="1" data-action="click" aria-label="Panel"><button aria-expanded="false">Toggle</button></div>'
+```
+
 ### Raw HTML
 
 Insert pre-rendered HTML without escaping:
@@ -82,14 +92,115 @@ Philiprehberger::HtmlBuilder.build do
 end
 ```
 
+### Form Builder Helpers
+
+Streamlined helpers for building forms with automatic label generation:
+
+```ruby
+Philiprehberger::HtmlBuilder.build do
+  form_for('/signup', class: 'form') do
+    field(:email, type: 'email')
+    field(:first_name)
+    select_field(:country, [%w[USA us], %w[Canada ca]], selected: 'us')
+    textarea_field(:bio, rows: '5')
+    button 'Submit', type: 'submit'
+  end
+end
+```
+
+The `field` helper generates a `<label>` and `<input>` pair. The `select_field` helper generates a `<label>` and `<select>` with `<option>` tags. The `textarea_field` helper generates a `<label>` and `<textarea>`. Label text is auto-generated from the field name (underscores become spaces, words are capitalized).
+
+### Conditional Rendering
+
+Render blocks based on conditions:
+
+```ruby
+logged_in = true
+admin = false
+
+Philiprehberger::HtmlBuilder.build do
+  render_if(logged_in) { p 'Welcome back!' }
+  render_unless(admin) { p 'Standard user' }
+end
+# => '<p>Welcome back!</p><p>Standard user</p>'
+```
+
+### Components
+
+Define reusable named blocks and render them anywhere:
+
+```ruby
+Philiprehberger::HtmlBuilder.build do
+  define_component(:card) do |locals|
+    div(class: 'card') do
+      h2 locals[:title]
+      p locals[:body]
+    end
+  end
+
+  use_component(:card, title: 'First', body: 'Content 1')
+  use_component(:card, title: 'Second', body: 'Content 2')
+end
+```
+
+Components without parameters use a simple block with no arguments. Components with parameters receive a hash of locals.
+
+### Output Modes
+
+Choose between minified and pretty-printed output:
+
+```ruby
+# Minified (default)
+Philiprehberger::HtmlBuilder.build do
+  div { p 'Hello' }
+end
+# => '<div><p>Hello</p></div>'
+
+# Pretty-printed
+Philiprehberger::HtmlBuilder.build_pretty do
+  div { p 'Hello' }
+end
+# => "<div>\n  <p>Hello</p>\n</div>"
+
+# Pretty-printed with custom indent
+Philiprehberger::HtmlBuilder.build_pretty(indent_size: 4) do
+  div { p 'Hello' }
+end
+```
+
+### Fragment Merging
+
+Combine multiple builder outputs into a single HTML string:
+
+```ruby
+header = Philiprehberger::HtmlBuilder.build { header { h1 'Title' } }
+body = Philiprehberger::HtmlBuilder.build { main { p 'Content' } }
+footer = Philiprehberger::HtmlBuilder.build { footer { p 'Copyright' } }
+
+Philiprehberger::HtmlBuilder.merge(header, body, footer)
+# => '<header><h1>Title</h1></header><main><p>Content</p></main><footer><p>Copyright</p></footer>'
+```
+
 ## API
 
 | Method | Description |
 |--------|-------------|
-| `HtmlBuilder.build { ... }` | Build HTML using the tag DSL, returns a string |
-| `Builder#to_html` | Render the builder contents to an HTML string |
+| `HtmlBuilder.build { ... }` | Build minified HTML using the tag DSL, returns a string |
+| `HtmlBuilder.build_pretty { ... }` | Build pretty-printed HTML with indentation |
+| `HtmlBuilder.build_minified { ... }` | Alias for `build`, explicitly produces minified output |
+| `HtmlBuilder.merge(*fragments)` | Merge multiple HTML fragment strings into one |
+| `Builder#to_html` | Render builder contents to a minified HTML string |
+| `Builder#to_pretty_html` | Render builder contents to a pretty-printed HTML string |
 | `Builder#text(content)` | Add escaped text content to the current element |
 | `Builder#raw(html)` | Add raw HTML without escaping |
+| `Builder#render_if(condition) { ... }` | Conditionally render a block if condition is truthy |
+| `Builder#render_unless(condition) { ... }` | Conditionally render a block if condition is falsy |
+| `Builder#define_component(name) { ... }` | Define a reusable named block |
+| `Builder#use_component(name, **locals)` | Render a previously defined component |
+| `Builder#form_for(action, method_type:, **attrs) { ... }` | Build a form tag with common defaults |
+| `Builder#field(name, label_text:, type:, **attrs)` | Build a label + input pair |
+| `Builder#select_field(name, options, label_text:, selected:, **attrs)` | Build a label + select with options |
+| `Builder#textarea_field(name, content, label_text:, **attrs)` | Build a label + textarea |
 | `Escape.html(value)` | Escape HTML special characters in a string |
 
 ## Development
@@ -99,6 +210,10 @@ bundle install
 bundle exec rspec
 bundle exec rubocop
 ```
+
+## Support
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Philip%20Rehberger-blue?logo=linkedin)](https://linkedin.com/in/philiprehberger) [![More Packages](https://img.shields.io/badge/more-packages-blue.svg)](https://github.com/philiprehberger?tab=repositories)
 
 ## License
 

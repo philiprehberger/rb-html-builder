@@ -9,7 +9,7 @@ module Philiprehberger
   module HtmlBuilder
     class Error < StandardError; end
 
-    # Build HTML using a tag DSL
+    # Build HTML using a tag DSL (minified output)
     #
     # @yield [Builder] the builder instance for DSL evaluation
     # @return [String] the rendered HTML string
@@ -20,6 +20,37 @@ module Philiprehberger
       builder = Builder.new
       builder.instance_eval(&block)
       builder.to_html
+    end
+
+    # Build pretty-printed HTML using a tag DSL
+    #
+    # @param indent_size [Integer] number of spaces per indent level (default 2)
+    # @yield [Builder] the builder instance for DSL evaluation
+    # @return [String] the pretty-printed HTML string
+    # @raise [Error] if no block is given
+    def self.build_pretty(indent_size: 2, &block)
+      raise Error, 'a block is required' unless block
+
+      builder = Builder.new
+      builder.instance_eval(&block)
+      builder.to_pretty_html(indent_size: indent_size)
+    end
+
+    # Build minified HTML (alias for build)
+    #
+    # @yield [Builder] the builder instance for DSL evaluation
+    # @return [String] the rendered HTML string
+    # @raise [Error] if no block is given
+    def self.build_minified(&)
+      build(&)
+    end
+
+    # Merge multiple HTML fragment strings into one
+    #
+    # @param fragments [Array<String>] HTML fragments to merge
+    # @return [String] the merged HTML string
+    def self.merge(*fragments)
+      fragments.join
     end
   end
 end
