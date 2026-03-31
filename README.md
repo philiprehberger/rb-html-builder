@@ -1,6 +1,8 @@
 # philiprehberger-html_builder
 
-[![Tests](https://github.com/philiprehberger/rb-html-builder/actions/workflows/ci.yml/badge.svg)](https://github.com/philiprehberger/rb-html-builder/actions/workflows/ci.yml) [![Gem Version](https://img.shields.io/gem/v/philiprehberger-html_builder)](https://rubygems.org/gems/philiprehberger-html_builder) [![GitHub release](https://img.shields.io/github/v/release/philiprehberger/rb-html-builder)](https://github.com/philiprehberger/rb-html-builder/releases) [![GitHub last commit](https://img.shields.io/github/last-commit/philiprehberger/rb-html-builder)](https://github.com/philiprehberger/rb-html-builder/commits/main) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Bug Reports](https://img.shields.io/badge/bug-reports-red.svg)](https://github.com/philiprehberger/rb-html-builder/issues) [![Feature Requests](https://img.shields.io/badge/feature-requests-blue.svg)](https://github.com/philiprehberger/rb-html-builder/issues) [![GitHub Sponsors](https://img.shields.io/badge/sponsor-philiprehberger-ea4aaa.svg?logo=github)](https://github.com/sponsors/philiprehberger)
+[![Tests](https://github.com/philiprehberger/rb-html-builder/actions/workflows/ci.yml/badge.svg)](https://github.com/philiprehberger/rb-html-builder/actions/workflows/ci.yml)
+[![Gem Version](https://badge.fury.io/rb/philiprehberger-html_builder.svg)](https://rubygems.org/gems/philiprehberger-html_builder)
+[![Last updated](https://img.shields.io/github/last-commit/philiprehberger/rb-html-builder)](https://github.com/philiprehberger/rb-html-builder/commits/main)
 
 Programmatic HTML builder with tag DSL, auto-escaping, form helpers, components, and output formatting.
 
@@ -213,8 +215,22 @@ bundle exec rubocop
 
 ## Support
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Philip%20Rehberger-blue?logo=linkedin)](https://linkedin.com/in/philiprehberger) [![More Packages](https://img.shields.io/badge/more-packages-blue.svg)](https://github.com/philiprehberger?tab=repositories)
+If you find this project useful:
+
+⭐ [Star the repo](https://github.com/philiprehberger/rb-html-builder)
+
+🐛 [Report issues](https://github.com/philiprehberger/rb-html-builder/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
+
+💡 [Suggest features](https://github.com/philiprehberger/rb-html-builder/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement)
+
+❤️ [Sponsor development](https://github.com/sponsors/philiprehberger)
+
+🌐 [All Open Source Projects](https://philiprehberger.com/open-source-packages)
+
+💻 [GitHub Profile](https://github.com/philiprehberger)
+
+🔗 [LinkedIn Profile](https://www.linkedin.com/in/philiprehberger)
 
 ## License
 
-MIT
+[MIT](LICENSE)
