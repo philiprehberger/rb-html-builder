@@ -4,7 +4,7 @@
 [![Gem Version](https://badge.fury.io/rb/philiprehberger-html_builder.svg)](https://rubygems.org/gems/philiprehberger-html_builder)
 [![Last updated](https://img.shields.io/github/last-commit/philiprehberger/rb-html-builder)](https://github.com/philiprehberger/rb-html-builder/commits/main)
 
-Programmatic HTML builder with tag DSL, auto-escaping, form helpers, components, and output formatting.
+Programmatic HTML builder with tag DSL, auto-escaping, form helpers, components, and output formatting
 
 ## Requirements
 

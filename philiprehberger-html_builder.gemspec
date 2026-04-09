@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.authors = ['Philip Rehberger']
   spec.email = ['me@philiprehberger.com']
 
-  spec.summary = 'Programmatic HTML builder with tag DSL and auto-escaping'
+  spec.summary = 'Programmatic HTML builder with tag DSL, auto-escaping, form helpers, components, and output formatting'
   spec.description = 'Build HTML programmatically using a clean tag DSL with nested blocks, ' \
                      'automatic content escaping, void element support, and attribute hashes.'
   spec.homepage = 'https://philiprehberger.com/open-source-packages/ruby/philiprehberger-html_builder'
