@@ -520,6 +520,148 @@ RSpec.describe Philiprehberger::HtmlBuilder do
     end
   end
 
+  describe '#hidden_field' do
+    it 'generates a hidden input with name and value' do
+      html = described_class.build { hidden_field(:token, 'abc123') }
+      expect(html).to eq('<input type="hidden" name="token" value="abc123">')
+    end
+
+    it 'converts symbol name and value to strings' do
+      html = described_class.build { hidden_field(:action, :update) }
+      expect(html).to eq('<input type="hidden" name="action" value="update">')
+    end
+
+    it 'works inside a form' do
+      html = described_class.build do
+        form_for('/submit') do
+          hidden_field(:csrf, 'token-value')
+          field(:email, type: 'email')
+        end
+      end
+      expect(html).to include('<input type="hidden" name="csrf" value="token-value">')
+    end
+  end
+
+  describe '#submit' do
+    it 'generates a submit button with default text' do
+      html = described_class.build { submit }
+      expect(html).to eq('<button type="submit">Submit</button>')
+    end
+
+    it 'generates a submit button with custom text' do
+      html = described_class.build { submit('Save') }
+      expect(html).to eq('<button type="submit">Save</button>')
+    end
+
+    it 'accepts additional attributes' do
+      html = described_class.build { submit('Go', class: 'btn-primary', id: 'submit-btn') }
+      expect(html).to include('type="submit"')
+      expect(html).to include('class="btn-primary"')
+      expect(html).to include('id="submit-btn"')
+      expect(html).to include('>Go</button>')
+    end
+
+    it 'works inside a form' do
+      html = described_class.build do
+        form_for('/login') do
+          field(:username)
+          submit('Log In')
+        end
+      end
+      expect(html).to include('<button type="submit">Log In</button>')
+    end
+  end
+
+  describe '#class_names' do
+    it 'returns a single string class' do
+      result = described_class.build do
+        div(class: class_names('btn')) { text 'x' }
+      end
+      expect(result).to include('class="btn"')
+    end
+
+    it 'joins multiple string classes' do
+      result = described_class.build do
+        div(class: class_names('btn', 'large')) { text 'x' }
+      end
+      expect(result).to include('class="btn large"')
+    end
+
+    it 'includes hash keys with truthy values' do
+      result = described_class.build do
+        div(class: class_names('btn', active: true, hidden: false)) { text 'x' }
+      end
+      expect(result).to include('class="btn active"')
+    end
+
+    it 'excludes hash keys with nil values' do
+      result = described_class.build do
+        div(class: class_names('base', featured: nil)) { text 'x' }
+      end
+      expect(result).to include('class="base"')
+    end
+
+    it 'handles all falsy hash values' do
+      result = described_class.build do
+        div(class: class_names(active: false, hidden: nil)) { text 'x' }
+      end
+      expect(result).to include('class=""')
+    end
+
+    it 'handles mixed strings and multiple hashes' do
+      result = described_class.build do
+        div(class: class_names('a', 'b', x: true, y: false, z: true)) { text 'x' }
+      end
+      expect(result).to include('class="a b x z"')
+    end
+  end
+
+  describe '#cache' do
+    it 'caches rendered block output' do
+      call_count = 0
+      html = described_class.build do
+        cache(:greeting) do
+          call_count += 1
+          p 'Hello'
+        end
+        cache(:greeting) do
+          call_count += 1
+          p 'Hello'
+        end
+      end
+      expect(html).to eq('<p>Hello</p><p>Hello</p>')
+      expect(call_count).to eq(1)
+    end
+
+    it 'caches different keys independently' do
+      html = described_class.build do
+        cache(:first) { span 'A' }
+        cache(:second) { span 'B' }
+      end
+      expect(html).to eq('<span>A</span><span>B</span>')
+    end
+
+    it 'raises error without a block' do
+      expect do
+        described_class.build { cache(:key) }
+      end.to raise_error(Philiprehberger::HtmlBuilder::Error, 'a block is required for cache')
+    end
+
+    it 'returns cached HTML on cache hit' do
+      html = described_class.build do
+        cache(:nav) do
+          nav { a 'Home', href: '/' }
+        end
+        div { text 'Content' }
+        cache(:nav) do
+          nav { a 'Stale', href: '/stale' }
+        end
+      end
+      expect(html).to include('<nav><a href="/">Home</a></nav>')
+      expect(html).not_to include('Stale')
+    end
+  end
+
   describe 'output modes' do
     it 'produces minified output with build' do
       html = described_class.build do

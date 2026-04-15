@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-04-14
+
+### Added
+- `hidden_field(name, value)` helper for generating hidden input elements
+- `submit(text, **attrs)` helper for generating submit buttons with optional attributes
+- `class_names(*args)` helper for building conditional CSS class strings from mixed arguments
+- `cache(key) { }` for fragment caching with instance-level memoization
+
 ## [0.2.3] - 2026-04-08
 
 ### Changed
