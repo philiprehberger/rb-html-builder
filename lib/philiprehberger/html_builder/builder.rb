@@ -80,6 +80,16 @@ module Philiprehberger
         current_children << node
       end
 
+      # Emit an HTML5 doctype declaration (`<!DOCTYPE html>`)
+      #
+      # Has no children and no attributes. In pretty mode the declaration is
+      # rendered on its own line at the current indentation.
+      #
+      # @return [void]
+      def doctype
+        current_children << DoctypeNode.new
+      end
+
       # Conditionally render a block if the condition is truthy
       #
       # @param condition [Object] the condition to evaluate
@@ -303,6 +313,20 @@ module Philiprehberger
           "#{' ' * (indent * indent_size)}#{@html}"
         else
           @html
+        end
+      end
+    end
+
+    # A node that renders the HTML5 doctype declaration
+    class DoctypeNode
+      DECLARATION = '<!DOCTYPE html>'
+
+      # @return [String] the doctype declaration
+      def to_html(indent: nil, indent_size: 2)
+        if indent
+          "#{' ' * (indent * indent_size)}#{DECLARATION}"
+        else
+          DECLARATION
         end
       end
     end

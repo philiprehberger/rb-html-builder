@@ -227,6 +227,31 @@ end
 
 Components without parameters use a simple block with no arguments. Components with parameters receive a hash of locals.
 
+### HTML5 Documents
+
+Emit a standards-compliant `<!DOCTYPE html>` declaration via the `doctype` DSL helper, or use `HtmlBuilder.document` for a full HTML5 document shortcut that prefixes the doctype automatically. The block decides the root element, so no hardcoded `<html>` wrapper is added:
+
+```ruby
+Philiprehberger::HtmlBuilder.build do
+  doctype
+  html { head { title 'Home' } }
+end
+# => '<!DOCTYPE html><html><head><title>Home</title></head></html>'
+
+Philiprehberger::HtmlBuilder.document do
+  html do
+    head { title 'Home' }
+    body { h1 'Welcome' }
+  end
+end
+# => "<!DOCTYPE html>\n<html><head><title>Home</title></head><body><h1>Welcome</h1></body></html>"
+
+Philiprehberger::HtmlBuilder.document(pretty: true) do
+  html { head { title 'Home' } }
+end
+# pretty-printed with the doctype on its own line
+```
+
 ### Output Modes
 
 Choose between minified and pretty-printed output:
@@ -279,12 +304,14 @@ Philiprehberger::HtmlBuilder.merge(header, body, footer)
 | `HtmlBuilder.build { ... }` | Build minified HTML using the tag DSL, returns a string |
 | `HtmlBuilder.build_pretty { ... }` | Build pretty-printed HTML with indentation |
 | `HtmlBuilder.build_minified { ... }` | Alias for `build`, explicitly produces minified output |
+| `HtmlBuilder.document(pretty:, indent_size:) { ... }` | Build an HTML5 document; prefixes `<!DOCTYPE html>` before the block output |
 | `HtmlBuilder.merge(*fragments)` | Merge multiple HTML fragment strings into one |
 | `HtmlBuilder.escape(value)` | Escape HTML special characters in a string using the DSL's escaper |
 | `Builder#to_html` | Render builder contents to a minified HTML string |
 | `Builder#to_pretty_html` | Render builder contents to a pretty-printed HTML string |
 | `Builder#text(content)` | Add escaped text content to the current element |
 | `Builder#raw(html)` | Add raw HTML without escaping |
+| `Builder#doctype` | Emit an HTML5 `<!DOCTYPE html>` declaration |
 | `Builder#render_if(condition) { ... }` | Conditionally render a block if condition is truthy |
 | `Builder#render_unless(condition) { ... }` | Conditionally render a block if condition is falsy |
 | `Builder#define_component(name) { ... }` | Define a reusable named block |
