@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-04-15
+
+### Added
+- `list(items, ordered: false, **attrs, &block)` helper for building `<ul>` or `<ol>` lists from an array of items with optional custom rendering via block
+
 ## [0.4.0] - 2026-04-15
 
 ### Added

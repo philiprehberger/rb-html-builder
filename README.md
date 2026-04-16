@@ -142,6 +142,27 @@ Philiprehberger::HtmlBuilder.build do
 end
 ```
 
+### Lists
+
+Build `<ul>` or `<ol>` lists from an array of items. Items are text-escaped by default. Pass `ordered: true` for an ordered list. Use a block for custom rendering of each item:
+
+```ruby
+Philiprehberger::HtmlBuilder.build do
+  list(%w[Apple Banana Cherry])
+end
+# => '<ul><li>Apple</li><li>Banana</li><li>Cherry</li></ul>'
+
+Philiprehberger::HtmlBuilder.build do
+  list(%w[First Second], ordered: true, class: 'steps')
+end
+# => '<ol class="steps"><li>First</li><li>Second</li></ol>'
+
+Philiprehberger::HtmlBuilder.build do
+  list(%w[Alice Bob]) { |name| strong name }
+end
+# => '<ul><li><strong>Alice</strong></li><li><strong>Bob</strong></li></ul>'
+```
+
 ### CSS Class Helpers
 
 Build conditional CSS class strings from mixed arguments. Strings are included as-is, hash keys are included when their value is truthy:
@@ -274,6 +295,7 @@ Philiprehberger::HtmlBuilder.merge(header, body, footer)
 | `Builder#textarea_field(name, content, label_text:, **attrs)` | Build a label + textarea |
 | `Builder#hidden_field(name, value)` | Generate a hidden input element |
 | `Builder#submit(text, **attrs)` | Generate a submit button (default text "Submit") |
+| `Builder#list(items, ordered:, **attrs, &block)` | Build a `<ul>` or `<ol>` from an array of items |
 | `Builder#class_names(*args)` | Build a conditional CSS class string from strings and hashes |
 | `Builder#cache(key) { ... }` | Cache rendered block output by key; return cached HTML on repeat calls |
 | `Escape.html(value)` | Escape HTML special characters in a string |
