@@ -890,6 +890,68 @@ RSpec.describe Philiprehberger::HtmlBuilder do
     end
   end
 
+  describe 'HTML5 doctype' do
+    it 'builder.doctype produces <!DOCTYPE html>' do
+      html = described_class.build { doctype }
+      expect(html).to eq('<!DOCTYPE html>')
+    end
+
+    it 'builder.doctype works alongside other root elements' do
+      html = described_class.build do
+        doctype
+        html { head { title 'T' } }
+      end
+      expect(html).to eq('<!DOCTYPE html><html><head><title>T</title></head></html>')
+    end
+
+    it 'builder.doctype pretty-prints on its own line' do
+      html = described_class.build_pretty do
+        doctype
+        html { head { title 'T' } }
+      end
+      expected = "<!DOCTYPE html>\n<html>\n  <head>\n    <title>T</title>\n  </head>\n</html>"
+      expect(html).to eq(expected)
+    end
+
+    it 'HtmlBuilder.document prefixes the doctype correctly' do
+      html = described_class.document { html { head { title 'T' } } }
+      expect(html).to eq("<!DOCTYPE html>\n<html><head><title>T</title></head></html>")
+    end
+
+    it 'HtmlBuilder.document does not add a hardcoded html wrapper' do
+      html = described_class.document { p 'naked' }
+      expect(html).to eq("<!DOCTYPE html>\n<p>naked</p>")
+    end
+
+    it 'HtmlBuilder.document supports pretty output' do
+      html = described_class.document(pretty: true) do
+        html do
+          head { title 'T' }
+        end
+      end
+      expected = "<!DOCTYPE html>\n<html>\n  <head>\n    <title>T</title>\n  </head>\n</html>"
+      expect(html).to eq(expected)
+    end
+
+    it 'HtmlBuilder.document supports custom indent size when pretty' do
+      html = described_class.document(pretty: true, indent_size: 4) do
+        html { body { p 'Hi' } }
+      end
+      expected = "<!DOCTYPE html>\n<html>\n    <body>\n        <p>Hi</p>\n    </body>\n</html>"
+      expect(html).to eq(expected)
+    end
+
+    it 'HtmlBuilder.document raises without a block' do
+      expect { described_class.document }.to raise_error(Philiprehberger::HtmlBuilder::Error, 'a block is required')
+    end
+
+    it 'emits capital-letter DOCTYPE' do
+      html = described_class.build { doctype }
+      expect(html).to include('DOCTYPE')
+      expect(html).not_to include('doctype')
+    end
+  end
+
   describe Philiprehberger::HtmlBuilder::Node do
     it 'returns tag name' do
       node = described_class.new(:div)

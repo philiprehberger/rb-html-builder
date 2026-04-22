@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-04-16
+
+### Added
+- HTML5 `<!DOCTYPE html>` helper via `Builder#doctype` and `HtmlBuilder.document`
+
 ## [0.5.0] - 2026-04-15
 
 ### Added

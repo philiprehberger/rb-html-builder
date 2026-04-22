@@ -45,6 +45,27 @@ module Philiprehberger
       build(&)
     end
 
+    # Build a full HTML5 document: emits `<!DOCTYPE html>` followed by the
+    # rendered block, separated by a newline.
+    #
+    # The block is evaluated at the root level exactly like `.build` / `.build_pretty`,
+    # so the caller decides whether to add an `<html>` wrapper. When `pretty: true`,
+    # output is pretty-printed with the given indent size.
+    #
+    # @param pretty [Boolean] whether to pretty-print the block output (default false)
+    # @param indent_size [Integer] number of spaces per indent level when pretty (default 2)
+    # @yield [Builder] the builder instance for DSL evaluation
+    # @return [String] the rendered HTML document string
+    # @raise [Error] if no block is given
+    def self.document(pretty: false, indent_size: 2, &block)
+      raise Error, 'a block is required' unless block
+
+      builder = Builder.new
+      builder.instance_eval(&block)
+      body = pretty ? builder.to_pretty_html(indent_size: indent_size) : builder.to_html
+      "#{DoctypeNode::DECLARATION}\n#{body}"
+    end
+
     # Merge multiple HTML fragment strings into one
     #
     # @param fragments [Array<String>] HTML fragments to merge
