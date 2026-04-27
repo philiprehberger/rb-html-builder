@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-04-26
+
+### Added
+- `merge_attrs(*hashes)` helper for merging attribute hashes; concatenates `:class` (space-separated) and `:style` (semicolon-separated) values rather than overwriting
+- `aria(**pairs)` helper for building ARIA attribute hashes from snake_case keyword pairs (converted to `aria-kebab-case` string keys; nil values omitted)
+
 ## [0.6.0] - 2026-04-16
 
 ### Added

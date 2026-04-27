@@ -265,6 +265,49 @@ module Philiprehberger
         result.join(' ')
       end
 
+      # Merge multiple attribute hashes into one
+      #
+      # `:class` values are concatenated with a single space, and `:style` values
+      # are concatenated with a semicolon and space. All other keys follow last-write-wins
+      # semantics. Input hashes are not mutated.
+      #
+      # @param hashes [Array<Hash>] one or more attribute hashes to merge
+      # @return [Hash] the merged attribute hash
+      def merge_attrs(*hashes)
+        result = {}
+        hashes.each do |h|
+          next if h.nil?
+
+          h.each do |key, value|
+            if key == :class && result.key?(:class)
+              result[:class] = "#{result[:class]} #{value}"
+            elsif key == :style && result.key?(:style)
+              result[:style] = "#{result[:style]}; #{value}"
+            else
+              result[key] = value
+            end
+          end
+        end
+        result
+      end
+
+      # Build an ARIA attribute hash from keyword pairs
+      #
+      # snake_case keys are converted to `aria-kebab-case` string keys. Values are
+      # converted to strings. Keys whose value is `nil` are omitted from the result.
+      #
+      # @param pairs [Hash] keyword pairs to convert into ARIA attributes
+      # @return [Hash<String, String>] hash with `"aria-*"` string keys and string values
+      def aria(**pairs)
+        result = {}
+        pairs.each do |key, value|
+          next if value.nil?
+
+          result["aria-#{key.to_s.tr('_', '-')}"] = value.to_s
+        end
+        result
+      end
+
       # Cache a rendered block result by key
       #
       # On the first call with a given key, the block is executed, its rendered

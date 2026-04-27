@@ -163,6 +163,28 @@ end
 # => '<ul><li><strong>Alice</strong></li><li><strong>Bob</strong></li></ul>'
 ```
 
+### Attribute Helpers
+
+Merge multiple attribute hashes — concatenating `:class` (single space) and `:style` (`'; '`) values rather than overwriting — and build ARIA attribute hashes from snake_case keyword pairs:
+
+```ruby
+Philiprehberger::HtmlBuilder.build do
+  base = { class: 'btn', style: 'color: red' }
+  variant = { class: 'btn-primary', style: 'font-weight: bold' }
+  attrs = merge_attrs(base, variant)
+
+  button('Save', **attrs)
+end
+# => '<button class="btn btn-primary" style="color: red; font-weight: bold">Save</button>'
+
+Philiprehberger::HtmlBuilder.build do
+  aria(label: 'Save', expanded: false, describedby: nil)
+end
+# => { 'aria-label' => 'Save', 'aria-expanded' => 'false' }
+```
+
+`merge_attrs` joins `:class` values with a single space and `:style` values with `'; '`. Other keys follow last-write-wins, and input hashes are not mutated. `aria` converts snake_case keys to `aria-kebab-case` string keys, stringifies values, and omits keys whose value is `nil`.
+
 ### CSS Class Helpers
 
 Build conditional CSS class strings from mixed arguments. Strings are included as-is, hash keys are included when their value is truthy:
@@ -324,6 +346,8 @@ Philiprehberger::HtmlBuilder.merge(header, body, footer)
 | `Builder#submit(text, **attrs)` | Generate a submit button (default text "Submit") |
 | `Builder#list(items, ordered:, **attrs, &block)` | Build a `<ul>` or `<ol>` from an array of items |
 | `Builder#class_names(*args)` | Build a conditional CSS class string from strings and hashes |
+| `Builder#merge_attrs(*hashes)` | Merge attribute hashes, concatenating `:class` (space) and `:style` (`'; '`) values |
+| `Builder#aria(**pairs)` | Build an ARIA attribute hash from snake_case keys (rendered as `aria-kebab-case`); omits nil values |
 | `Builder#cache(key) { ... }` | Cache rendered block output by key; return cached HTML on repeat calls |
 | `Escape.html(value)` | Escape HTML special characters in a string |
 
