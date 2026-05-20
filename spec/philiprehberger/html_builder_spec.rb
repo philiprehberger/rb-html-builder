@@ -708,6 +708,58 @@ RSpec.describe Philiprehberger::HtmlBuilder do
     end
   end
 
+  describe '#capture' do
+    it 'returns the rendered HTML without appending to the document' do
+      captured = nil
+      html = described_class.build do
+        captured = capture { p 'inner' }
+        div { text 'outer' }
+      end
+
+      expect(captured).to eq('<p>inner</p>')
+      expect(html).to eq('<div>outer</div>')
+    end
+
+    it 'can be inserted back into the document via raw' do
+      html = described_class.build do
+        fragment = capture { strong 'bold' }
+        div do
+          raw fragment
+          raw fragment
+        end
+      end
+      expect(html).to eq('<div><strong>bold</strong><strong>bold</strong></div>')
+    end
+
+    it 'supports the full tag DSL inside the captured block' do
+      captured = nil
+      described_class.build do
+        captured = capture do
+          ul do
+            li 'one'
+            li 'two'
+          end
+        end
+      end
+      expect(captured).to eq('<ul><li>one</li><li>two</li></ul>')
+    end
+
+    it 'inherits previously defined components' do
+      captured = nil
+      described_class.build do
+        define_component(:badge) { span 'NEW', class: 'badge' }
+        captured = capture { use_component(:badge) }
+      end
+      expect(captured).to eq('<span class="badge">NEW</span>')
+    end
+
+    it 'raises Error without a block' do
+      expect do
+        described_class.build { capture }
+      end.to raise_error(Philiprehberger::HtmlBuilder::Error, 'a block is required for capture')
+    end
+  end
+
   describe 'output modes' do
     it 'produces minified output with build' do
       html = described_class.build do

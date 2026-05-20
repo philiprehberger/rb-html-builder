@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-05-20
+
+### Added
+- `Builder#capture { ... }` — render a block in an isolated scope and return the HTML as a string without appending to the current document. Inherits previously defined components, so component reuse works inside captured fragments. Pairs naturally with `Builder#raw` for inserting the captured HTML into the document.
+- Card image reference in the README for registry-side rendering
+
 ## [0.7.0] - 2026-04-26
 
 ### Added

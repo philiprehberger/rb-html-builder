@@ -308,6 +308,28 @@ module Philiprehberger
         result
       end
 
+      # Render a block in an isolated builder scope and return the HTML string
+      # without appending anything to the current document.
+      #
+      # Useful for template helpers that need to compute a fragment once and
+      # then insert it in multiple places (e.g. via {#raw}) or pass it as a
+      # string attribute (e.g. ``title:`` containing a small piece of escaped
+      # markup) — none of which can be expressed with the regular tag DSL
+      # because every tag method side-effects into the current scope.
+      #
+      # @yield block evaluated against a fresh builder; the same DSL methods
+      #   (tags, `text`, `raw`, components, etc.) are available
+      # @return [String] the captured HTML (minified)
+      # @raise [Error] if no block is given
+      def capture(&block)
+        raise Error, 'a block is required for capture' unless block
+
+        nested = Builder.new
+        @components.each { |name, b| nested.instance_variable_get(:@components)[name] = b }
+        nested.instance_eval(&block)
+        nested.to_html
+      end
+
       # Cache a rendered block result by key
       #
       # On the first call with a given key, the block is executed, its rendered

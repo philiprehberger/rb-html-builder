@@ -4,6 +4,8 @@
 [![Gem Version](https://badge.fury.io/rb/philiprehberger-html_builder.svg)](https://rubygems.org/gems/philiprehberger-html_builder)
 [![Last updated](https://img.shields.io/github/last-commit/philiprehberger/rb-html-builder)](https://github.com/philiprehberger/rb-html-builder/commits/main)
 
+![philiprehberger-html_builder](https://raw.githubusercontent.com/philiprehberger/rb-html-builder/main/package-card.webp)
+
 Programmatic HTML builder with tag DSL, auto-escaping, form helpers, components, and output formatting
 
 ## Requirements
@@ -198,6 +200,25 @@ end
 # => <div class="btn btn-lg active">Click me</div>
 ```
 
+### Capturing Fragments
+
+Render a block in a separate scope and capture the HTML as a string instead of appending it to the document. Useful when the same fragment is needed in more than one place or as a value:
+
+```ruby
+Philiprehberger::HtmlBuilder.build do
+  badge = capture { strong 'NEW', class: 'badge' }
+  article do
+    h2 'Headline'
+    raw badge
+    p 'Body text'
+    raw badge
+  end
+end
+# => <article><h2>Headline</h2><strong class="badge">NEW</strong><p>Body text</p><strong class="badge">NEW</strong></article>
+```
+
+`capture` inherits any components defined on the parent builder, so component reuse works inside captured fragments.
+
 ### Fragment Caching
 
 Cache rendered block results by key. On subsequent calls with the same key, the cached HTML is returned without re-executing the block:
@@ -349,6 +370,7 @@ Philiprehberger::HtmlBuilder.merge(header, body, footer)
 | `Builder#merge_attrs(*hashes)` | Merge attribute hashes, concatenating `:class` (space) and `:style` (`'; '`) values |
 | `Builder#aria(**pairs)` | Build an ARIA attribute hash from snake_case keys (rendered as `aria-kebab-case`); omits nil values |
 | `Builder#cache(key) { ... }` | Cache rendered block output by key; return cached HTML on repeat calls |
+| `Builder#capture { ... }` | Render the block in an isolated scope and return its HTML string (no append) |
 | `Escape.html(value)` | Escape HTML special characters in a string |
 
 ## Development
