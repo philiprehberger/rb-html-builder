@@ -133,4 +133,51 @@ RSpec.describe Philiprehberger::HtmlBuilder::Builder do
                            })
     end
   end
+
+  describe '#data' do
+    it 'returns an empty hash when no pairs are given' do
+      expect(builder.data).to eq({})
+    end
+
+    it 'converts a single snake_case key to data-kebab-case' do
+      expect(builder.data(my_key: 'value')).to eq({ 'data-my-key' => 'value' })
+    end
+
+    it 'converts multi-word snake_case keys to hyphenated data attributes' do
+      expect(builder.data(modal_target: 'dialog')).to eq({ 'data-modal-target' => 'dialog' })
+    end
+
+    it 'passes through symbol keys that already contain dashes with a data- prefix' do
+      expect(builder.data('modal-target': 'dialog')).to eq({ 'data-modal-target' => 'dialog' })
+    end
+
+    it 'preserves boolean values as their string form' do
+      expect(builder.data(active: true, disabled: false)).to eq({
+                                                                  'data-active' => 'true',
+                                                                  'data-disabled' => 'false'
+                                                                })
+    end
+
+    it 'converts numeric values to strings' do
+      expect(builder.data(count: 3)).to eq({ 'data-count' => '3' })
+    end
+
+    it 'omits keys with nil values from the result' do
+      expect(builder.data(id: '1', extra: nil)).to eq({ 'data-id' => '1' })
+    end
+
+    it 'returns an empty hash when all values are nil' do
+      expect(builder.data(id: nil, extra: nil)).to eq({})
+    end
+
+    it 'handles many pairs at once' do
+      result = builder.data(controller: 'menu', action: 'click', target: 'button', open: true)
+      expect(result).to eq({
+                             'data-controller' => 'menu',
+                             'data-action' => 'click',
+                             'data-target' => 'button',
+                             'data-open' => 'true'
+                           })
+    end
+  end
 end

@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-05-30
+
+### Added
+- `HtmlBuilder.data(**attrs)` helper to build `data-*` attribute hashes, mirroring the existing `aria` helper
+
+### Fixed
+- Bug report issue template now includes a required `gem-version` field and marks `ruby-version` as required, matching the standard template
+
 ## [0.8.0] - 2026-05-20
 
 ### Added

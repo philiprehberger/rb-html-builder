@@ -308,6 +308,25 @@ module Philiprehberger
         result
       end
 
+      # Build a `data-*` attribute hash from keyword pairs
+      #
+      # snake_case keys are converted to `data-kebab-case` string keys. Values are
+      # converted to strings. Keys whose value is `nil` are omitted from the result.
+      # String keys are passed through with a `data-` prefix and underscores
+      # converted to dashes (e.g. `"modal-target"` becomes `"data-modal-target"`).
+      #
+      # @param attrs [Hash] keyword pairs to convert into `data-*` attributes
+      # @return [Hash<String, String>] hash with `"data-*"` string keys and string values
+      def data(**attrs)
+        result = {}
+        attrs.each do |key, value|
+          next if value.nil?
+
+          result["data-#{key.to_s.tr('_', '-')}"] = value.to_s
+        end
+        result
+      end
+
       # Render a block in an isolated builder scope and return the HTML string
       # without appending anything to the current document.
       #

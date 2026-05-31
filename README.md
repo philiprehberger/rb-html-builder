@@ -183,9 +183,14 @@ Philiprehberger::HtmlBuilder.build do
   aria(label: 'Save', expanded: false, describedby: nil)
 end
 # => { 'aria-label' => 'Save', 'aria-expanded' => 'false' }
+
+Philiprehberger::HtmlBuilder.build do
+  data(controller: 'menu', modal_target: 'dialog', open: true)
+end
+# => { 'data-controller' => 'menu', 'data-modal-target' => 'dialog', 'data-open' => 'true' }
 ```
 
-`merge_attrs` joins `:class` values with a single space and `:style` values with `'; '`. Other keys follow last-write-wins, and input hashes are not mutated. `aria` converts snake_case keys to `aria-kebab-case` string keys, stringifies values, and omits keys whose value is `nil`.
+`merge_attrs` joins `:class` values with a single space and `:style` values with `'; '`. Other keys follow last-write-wins, and input hashes are not mutated. `aria` converts snake_case keys to `aria-kebab-case` string keys, stringifies values, and omits keys whose value is `nil`. `data` mirrors `aria` for the `data-*` attribute namespace.
 
 ### CSS Class Helpers
 
@@ -369,6 +374,7 @@ Philiprehberger::HtmlBuilder.merge(header, body, footer)
 | `Builder#class_names(*args)` | Build a conditional CSS class string from strings and hashes |
 | `Builder#merge_attrs(*hashes)` | Merge attribute hashes, concatenating `:class` (space) and `:style` (`'; '`) values |
 | `Builder#aria(**pairs)` | Build an ARIA attribute hash from snake_case keys (rendered as `aria-kebab-case`); omits nil values |
+| `Builder#data(**attrs)` | Build a `data-*` attribute hash from snake_case keys (rendered as `data-kebab-case`); omits nil values |
 | `Builder#cache(key) { ... }` | Cache rendered block output by key; return cached HTML on repeat calls |
 | `Builder#capture { ... }` | Render the block in an isolated scope and return its HTML string (no append) |
 | `Escape.html(value)` | Escape HTML special characters in a string |
